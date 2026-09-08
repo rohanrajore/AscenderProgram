@@ -1,0 +1,29 @@
+# Supplied manifest — read, apply, do not edit.
+# The same Deployment + Service you created imperatively, written down so it can be repeated.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-web
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: hello-web }
+  template:
+    metadata:
+      labels: { app: hello-web }
+    spec:
+      containers:
+        - name: hello-app
+          image: us-docker.pkg.dev/google-samples/containers/gke/hello-app:2.0
+          ports: [{ containerPort: 8080 }]
+          resources:
+            requests: { cpu: "250m", memory: "256Mi" }   # Autopilot bills what you request
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-web
+spec:
+  type: LoadBalancer
+  selector: { app: hello-web }
+  ports: [{ port: 80, targetPort: 8080 }]
